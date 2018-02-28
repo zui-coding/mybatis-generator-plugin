@@ -1,0 +1,48 @@
+<idea-plugin>
+  <id>Mybaits-Generator-Plugin</id>
+  <name>mybatis 生成 插件</name>
+  <version>1.0</version>
+  <vendor email="stephen.linicoding@gmail.com" url="http://www.zuicoding.com">醉 ● coding</vendor>
+
+  <description><![CDATA[
+      mybaits generator plugin
+    ]]></description>
+
+  <change-notes><![CDATA[
+      mybaits generator plugin
+    ]]>
+  </change-notes>
+
+  <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
+  <idea-version since-build="173.0"/>
+
+  <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+       on how to target different products -->
+  <!-- uncomment to enable plugin in all products
+  <depends>com.intellij.modules.lang</depends>
+  -->
+
+  <extensions defaultExtensionNs="com.intellij">
+    <!-- Add your extensions here -->
+    <applicationConfigurable
+            id="Mybatis-Generator-Configuarable"
+            displayName="Mybatis Generator 配置"
+            instance="com.zuicoding.framework.mybatis.generator.configuration.MybatisGeneratorConfigurable"/>
+
+    <applicationService serviceInterface="com.zuicoding.framework.mybatis.generator.ui.MybatisGeneratorSettingsComponent"
+                        serviceImplementation="com.zuicoding.framework.mybatis.generator.ui.MybatisGeneratorSettingsComponent"/>
+  </extensions>
+
+  <actions>
+    <!-- Add your actions here -->
+    <action id="mybatis-generator-plugin-tools-action"
+            class="com.zuicoding.framework.mybatis.generator.MybatisGeneratorToolsAction" text="Mybatis Generator"
+            description="mybatis generator">
+      <add-to-group group-id="ToolsMenu" anchor="first"/>
+    </action>
+      <action id="test-test-test" class="com.zuicoding.framework.mybatis.generator.TestAction" text="测试" description="测试">
+          <add-to-group group-id="ToolsMenu" anchor="first"/>
+      </action>
+  </actions>
+
+</idea-plugin>
