@@ -12,6 +12,7 @@ import java.util.List;
 public class MybatisGeneratorConfig {
 
     private String driverJarPath;
+    private String jdbcUrl;
     private String defaultModelType;
     private String targetRuntime;
     private String javaFileEncoding = "UTF-8";
@@ -206,5 +207,13 @@ public class MybatisGeneratorConfig {
 
     public void setUseActualColumnNames(boolean useActualColumnNames) {
         this.useActualColumnNames = useActualColumnNames;
+    }
+
+    public String getJdbcUrl() {
+        return jdbcUrl;
+    }
+
+    public void setJdbcUrl(String jdbcUrl) {
+        this.jdbcUrl = jdbcUrl;
     }
 }

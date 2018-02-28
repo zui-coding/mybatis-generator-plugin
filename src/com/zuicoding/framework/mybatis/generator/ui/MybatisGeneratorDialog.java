@@ -89,7 +89,7 @@ public class MybatisGeneratorDialog extends DialogWrapper {
 
     public MybatisGeneratorDialog(){
         super(false);
-       // init();
+        //init();
         setTitle("mybatis 生成器");
         setOKButtonText("生成");
         dynamicDBDriver = new DynamicDBDriver();
@@ -258,6 +258,7 @@ public class MybatisGeneratorDialog extends DialogWrapper {
 
     private void generate() throws Exception {
         Map<String,MybatisGeneratorConfig> dbMap = new HashMap<>();
+        FileGenerator generator = FileGenerator.getInstance();
         for (TreePath treePath : databaseTree.getSelectionPaths()) {
 
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) treePath.getLastPathComponent();
@@ -275,8 +276,13 @@ public class MybatisGeneratorDialog extends DialogWrapper {
                     continue;
                 }
                 config = new MybatisGeneratorConfig();
+                DataSourceInfo dataSourceInfo = treeNode.getDataSourceInfo();
+                config.setJdbcUrl(generator.generateDBUrl(parent.getText(),
+                        dataSourceInfo.getHost(),
+                        dataSourceInfo.getPort(),
+                        dataSourceInfo.getUrlTemplate()));
 
-                fillConfig(config,treeNode.getDataSourceInfo());
+                fillConfig(config,dataSourceInfo);
 
                 config.addTable(treeNode.getText());
 
@@ -285,7 +291,7 @@ public class MybatisGeneratorDialog extends DialogWrapper {
             }
         }
 
-        FileGenerator generator = FileGenerator.getInstance();
+
         Map<String,Object> params = new HashMap<>(1);
         for (Map.Entry<String, MybatisGeneratorConfig> entry : dbMap.entrySet()) {
             params.put("config",entry.getValue());

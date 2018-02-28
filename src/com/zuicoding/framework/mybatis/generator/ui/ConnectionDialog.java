@@ -3,8 +3,6 @@ package com.zuicoding.framework.mybatis.generator.ui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.io.File;
 
 import javax.swing.JButton;
@@ -25,8 +23,7 @@ import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
 import com.zuicoding.framework.mybatis.generator.model.DataSourceInfo;
 import com.zuicoding.framework.mybatis.generator.model.MybatisGeneratorSetting;
-import com.zuicoding.framework.mybatis.generator.ui.custom.MybaitsGeneratorComboBoxRenderer;
-import com.zuicoding.framework.mybatis.generator.ui.custom.MybatisGeneratorComboBoxModel;
+import com.zuicoding.framework.mybatis.generator.service.FileGenerator;
 import com.zuicoding.framework.mybatis.generator.util.StringTools;
 
 /**
@@ -136,11 +133,12 @@ public class ConnectionDialog extends DialogWrapper {
             dataSourceInfo.setUserName(userField.getText());
             dataSourceInfo.setHost(hostField.getText());
             dataSourceInfo.setPassword(new String(passwordField.getPassword()));
-            dataSourceInfo.setUrl(StringTools.getUrl(
-                    dataSourceInfo.getDriverClass(),
+            MybatisGeneratorSetting setting = (MybatisGeneratorSetting) driverTypeCombobox.getSelectedItem();
+            FileGenerator generator = FileGenerator.getInstance();
+            dataSourceInfo.setUrl(generator.generateDBUrl("",
                     dataSourceInfo.getHost(),
-                    dataSourceInfo.getPort()));
-
+                    dataSourceInfo.getPort(),setting.getUrlTemplate()));
+            dataSourceInfo.setUrlTemplate(setting.getUrlTemplate());
             super.doOKAction();
         }catch (Exception e){
             Messages.showErrorDialog("创建连接失败","Mybatis Generator");

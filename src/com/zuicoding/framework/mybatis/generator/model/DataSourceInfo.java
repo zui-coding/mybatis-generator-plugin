@@ -17,6 +17,7 @@ public class DataSourceInfo {
     private String userName;
     private String password;
     private Integer port;
+    private String urlTemplate;
 
     public String getDriverClass() {
         return driverClass;
@@ -80,5 +81,13 @@ public class DataSourceInfo {
 
     public void setHost(String host) {
         this.host = host;
+    }
+
+    public String getUrlTemplate() {
+        return urlTemplate;
+    }
+
+    public void setUrlTemplate(String urlTemplate) {
+        this.urlTemplate = urlTemplate;
     }
 }

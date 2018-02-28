@@ -38,7 +38,7 @@
             @TODO:是否可以扩展
          -->
         <jdbcConnection driverClass="${config.dataSourceInfo.driverClass}"
-                        connectionURL="${config.dataSourceInfo.url}"
+                        connectionURL="${config.jdbcUrl}"
                         userId="$!{config.dataSourceInfo.userName}"
                         password="$!{config.dataSourceInfo.password}">
             <!-- 这里面可以设置property属性，每一个property属性都设置到配置的Driver上 -->

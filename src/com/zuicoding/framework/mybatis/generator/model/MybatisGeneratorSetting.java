@@ -14,8 +14,17 @@ public class MybatisGeneratorSetting implements Serializable{
     private String name;
     private String driverClass;
     private String driverPath;
+    //数据库连接模板
+    private String urlTemplate;
 
     public MybatisGeneratorSetting() {
+    }
+
+    public MybatisGeneratorSetting(String name, String driverClass, String driverPath, String urlTemplate) {
+        this.name = name;
+        this.driverClass = driverClass;
+        this.driverPath = driverPath;
+        this.urlTemplate = urlTemplate;
     }
 
     public MybatisGeneratorSetting(String name, String driverClass, String driverPath) {
@@ -48,6 +57,14 @@ public class MybatisGeneratorSetting implements Serializable{
         this.driverPath = driverPath;
     }
 
+    public String getUrlTemplate() {
+        return urlTemplate;
+    }
+
+    public void setUrlTemplate(String urlTemplate) {
+        this.urlTemplate = urlTemplate;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -59,12 +76,13 @@ public class MybatisGeneratorSetting implements Serializable{
         MybatisGeneratorSetting setting = (MybatisGeneratorSetting) o;
         return Objects.equals(name, setting.name) &&
                 Objects.equals(driverClass, setting.driverClass) &&
-                Objects.equals(driverPath, setting.driverPath);
+                Objects.equals(driverPath, setting.driverPath) &&
+                Objects.equals(urlTemplate, setting.urlTemplate);
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(name, driverClass, driverPath);
+        return Objects.hash(name, driverClass, driverPath, urlTemplate);
     }
 }

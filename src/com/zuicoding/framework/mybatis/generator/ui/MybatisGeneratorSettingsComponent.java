@@ -41,7 +41,7 @@ public class MybatisGeneratorSettingsComponent implements PersistentStateCompone
     private JButton addButton;
     private JButton delButton;
 
-    private String[] header = new String[] {"name", "driverClass", "driverPath"};
+    private String[] header = new String[] {"name", "driverClass", "driverPath","url"};
     private DefaultTableModel tableModel;
     private JTextField driverPathField;
     private JFileChooser fileChooser;
@@ -79,7 +79,7 @@ public class MybatisGeneratorSettingsComponent implements PersistentStateCompone
         addButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                tableModel.addRow(new Object[3]);
+                tableModel.addRow(new Object[4]);
                 driverTable.getColumnModel().getColumn(2).setCellEditor(new DefaultCellEditor(driverPathField));
             }
         });
@@ -100,7 +100,9 @@ public class MybatisGeneratorSettingsComponent implements PersistentStateCompone
     @Override
     public List<MybatisGeneratorSetting> getState() {
         int count = driverTable.getRowCount();
-        if(count <= 0) return null;
+        if(count <= 0) {
+            return null;
+        }
         List<MybatisGeneratorSetting> settings = new ArrayList<>(count);
         MybatisGeneratorSetting setting = null;
         for (int i = 0; i < count; i++) {
@@ -108,12 +110,15 @@ public class MybatisGeneratorSettingsComponent implements PersistentStateCompone
             String name = (String) driverTable.getValueAt(i, 0);
             String driverClass = (String) driverTable.getValueAt(i, 1);
             String driverPath = (String) driverTable.getValueAt(i,2);
+            String urlTemplate = (String) driverTable.getValueAt(i,3);
+
             if (StringTools.isBank(name) ||
                     StringTools.isBank(driverClass) ||
-                    StringTools.isBank(driverPath)) {
+                    StringTools.isBank(driverPath) ||
+                    StringTools.isBank(urlTemplate)) {
                 continue;
             }
-            setting = new MybatisGeneratorSetting(name, driverClass, driverPath);
+            setting = new MybatisGeneratorSetting(name, driverClass, driverPath,urlTemplate);
             settings.add(setting);
         }
 
@@ -135,7 +140,9 @@ public class MybatisGeneratorSettingsComponent implements PersistentStateCompone
             MybatisGeneratorSetting setting = mybatisGeneratorSettings.get(i);
             data = new Object[] {setting.getName(),
                     setting.getDriverClass(),
-                    setting.getDriverPath()};
+                    setting.getDriverPath(),
+                    setting.getUrlTemplate()
+            };
 
             tableModel.addRow(data);
         }
