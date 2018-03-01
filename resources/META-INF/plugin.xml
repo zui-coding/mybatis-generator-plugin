@@ -40,9 +40,7 @@
             description="mybatis generator">
       <add-to-group group-id="ToolsMenu" anchor="first"/>
     </action>
-      <action id="test-test-test" class="com.zuicoding.framework.mybatis.generator.TestAction" text="测试" description="测试">
-          <add-to-group group-id="ToolsMenu" anchor="first"/>
-      </action>
+    
   </actions>
 
 </idea-plugin>

@@ -3,13 +3,14 @@ package com.zuicoding.framework.mybatis.generator.ui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.io.File;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JSpinner;
@@ -24,6 +25,8 @@ import com.intellij.openapi.ui.Messages;
 import com.zuicoding.framework.mybatis.generator.model.DataSourceInfo;
 import com.zuicoding.framework.mybatis.generator.model.MybatisGeneratorSetting;
 import com.zuicoding.framework.mybatis.generator.service.FileGenerator;
+import com.zuicoding.framework.mybatis.generator.ui.custom.MybaitsGeneratorComboBoxRenderer;
+import com.zuicoding.framework.mybatis.generator.ui.custom.MybatisGeneratorComboBoxModel;
 import com.zuicoding.framework.mybatis.generator.util.StringTools;
 
 /**
@@ -55,22 +58,22 @@ public class ConnectionDialog extends DialogWrapper {
         portSpinner.setModel(new SpinnerNumberModel(3306,80,65536,1));
         portSpinner.setEditor(new JSpinner.NumberEditor(portSpinner,"#"));
         bindEvent();
-//        settingsComponent = MybatisGeneratorSettingsComponent.getInstance();
-//        driverTypeCombobox.setModel(new MybatisGeneratorComboBoxModel(
-//                settingsComponent.getState()));
-//        driverTypeCombobox.setEditable(false);
-//        driverTypeCombobox.setRenderer(new MybaitsGeneratorComboBoxRenderer());
-//        driverTypeCombobox.addItemListener(new ItemListener() {
-//            @Override
-//            public void itemStateChanged(ItemEvent e) {
-//                if (e.getStateChange() == ItemEvent.SELECTED) {
-//                    MybatisGeneratorSetting setting = (MybatisGeneratorSetting) e.getItem();
-//                    driverPathField.setText(setting.getDriverPath());
-//                    driverClassField.setText(setting.getDriverClass());
-//
-//                }
-//            }
-//        });
+        settingsComponent = MybatisGeneratorSettingsComponent.getInstance();
+        driverTypeCombobox.setModel(new MybatisGeneratorComboBoxModel(
+                settingsComponent.getState()));
+        driverTypeCombobox.setEditable(false);
+        driverTypeCombobox.setRenderer(new MybaitsGeneratorComboBoxRenderer());
+        driverTypeCombobox.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                if (e.getStateChange() == ItemEvent.SELECTED) {
+                    MybatisGeneratorSetting setting = (MybatisGeneratorSetting) e.getItem();
+                    driverPathField.setText(setting.getDriverPath());
+                    driverClassField.setText(setting.getDriverClass());
+
+                }
+            }
+        });
     }
 
     private void bindEvent(){
@@ -164,11 +167,4 @@ public class ConnectionDialog extends DialogWrapper {
         super.show();
     }
 
-    public static void main(String[] args) {
-        JFrame frame = new JFrame("ConnectionDialog");
-        frame.setContentPane(new ConnectionDialog().container);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.pack();
-        frame.setVisible(true);
-    }
 }

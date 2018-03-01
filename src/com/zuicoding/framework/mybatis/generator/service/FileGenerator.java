@@ -3,6 +3,7 @@ package com.zuicoding.framework.mybatis.generator.service;
 
 import java.io.File;
 import java.io.InputStream;
+import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
@@ -16,7 +17,9 @@ import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
 import org.mybatis.generator.api.MyBatisGenerator;
+import org.mybatis.generator.api.ProgressCallback;
 import org.mybatis.generator.api.ShellCallback;
+import org.mybatis.generator.api.VerboseProgressCallback;
 import org.mybatis.generator.config.Configuration;
 import org.mybatis.generator.config.xml.ConfigurationParser;
 import org.mybatis.generator.internal.DefaultShellCallback;
@@ -35,6 +38,8 @@ public class FileGenerator {
     private ShellCallback callback;
     private List<String> warnings = new ArrayList<>();
     private boolean overwrite = true;
+    private Template template ;
+    private ProgressCallback progressCallback;
     private FileGenerator() throws Exception {
         engine = new VelocityEngine();
         engine.addProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
@@ -43,9 +48,9 @@ public class FileGenerator {
         engine.addProperty("input.encoding", "UTF-8");
         engine.addProperty("output.encodng", "UTF-8");
         engine.init();
-
+        template = engine.getTemplate("mybatis-generator-config.vm");
         callback = new DefaultShellCallback(overwrite);
-
+        progressCallback = new VerboseProgressCallback();
     }
 
     private static class FileGeneratorHolder {
@@ -65,12 +70,10 @@ public class FileGenerator {
     }
 
     public void generateConfig(Map<String, Object> params, Writer writer) {
-        Template template = engine.getTemplate("mybatis-generator-config.vm");
+
         VelocityContext context = new VelocityContext(params);
 
         template.merge(context, writer);
-
-
     }
 
     public String generateDBUrl(String database,
@@ -109,12 +112,13 @@ public class FileGenerator {
         ConfigurationParser configParser = new ConfigurationParser(warnings);
         Configuration config = configParser.parseConfiguration(configStream);
         MyBatisGenerator generator = new MyBatisGenerator(config,callback,warnings);
-        generator.generate(null);
+        generator.generate(progressCallback);
     }
-
-    public static void main(String[] args) throws Exception {
-
-        FileGenerator.getInstance().generate(new File("/Users/linyajun/mybatis-generator-config-comment.xml"));
+    public void generate(Reader configReader) throws Exception {
+        ConfigurationParser configParser = new ConfigurationParser(warnings);
+        Configuration config = configParser.parseConfiguration(configReader);
+        MyBatisGenerator generator = new MyBatisGenerator(config,callback,warnings);
+        generator.generate(progressCallback);
     }
 
 

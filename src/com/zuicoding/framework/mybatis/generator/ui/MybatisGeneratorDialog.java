@@ -6,7 +6,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.io.FileWriter;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,7 +16,6 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JTree;
@@ -89,7 +89,7 @@ public class MybatisGeneratorDialog extends DialogWrapper {
 
     public MybatisGeneratorDialog(){
         super(false);
-        //init();
+        init();
         setTitle("mybatis 生成器");
         setOKButtonText("生成");
         dynamicDBDriver = new DynamicDBDriver();
@@ -105,11 +105,12 @@ public class MybatisGeneratorDialog extends DialogWrapper {
 
 
                     TreePath selectionPath = databaseTree.getSelectionPath();
+                    if (selectionPath != null) {
+                        loadNode((DefaultMutableTreeNode) selectionPath.getLastPathComponent());
+                        databaseTree.expandPath(selectionPath);
+                        databaseTree.updateUI();
+                    }
 
-                    loadNode((DefaultMutableTreeNode) selectionPath.getLastPathComponent());
-
-                    databaseTree.expandPath(selectionPath);
-                    databaseTree.updateUI();
                 }
             }
         });
@@ -295,25 +296,15 @@ public class MybatisGeneratorDialog extends DialogWrapper {
         Map<String,Object> params = new HashMap<>(1);
         for (Map.Entry<String, MybatisGeneratorConfig> entry : dbMap.entrySet()) {
             params.put("config",entry.getValue());
-            File homeDirectory = FileSystemView.getFileSystemView().getHomeDirectory();
-            String path =  homeDirectory.getAbsolutePath() + File.separator + String.format("mybatis-generator-config-%s.xml",
-                    entry.getKey());
-            File file = new File(path);
-            if (!file.exists()) {
-                file.createNewFile();
-            }
-            FileWriter writer = new FileWriter(file);
-
+            StringWriter writer = new StringWriter();
             generator.generateConfig(params,writer);
+            writer.flush();
             writer.close();
-
-            generator.generate(file);
-
-            file.deleteOnExit();
+            StringReader reader = new StringReader(writer.toString());
+            generator.generate(reader);
+            reader.close();
             params.clear();
         }
-
-
 
 
     }
@@ -341,13 +332,7 @@ public class MybatisGeneratorDialog extends DialogWrapper {
         config.setUseActualColumnNames((Boolean) useActColumnCombobox.getSelectedItem());
     }
 
-    public static void main(String[] args) {
-        JFrame frame = new JFrame("MybatisGeneratorDialog");
-        frame.setContentPane(new MybatisGeneratorDialog().container);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.pack();
-        frame.setVisible(true);
-    }
+
 
 
 }
