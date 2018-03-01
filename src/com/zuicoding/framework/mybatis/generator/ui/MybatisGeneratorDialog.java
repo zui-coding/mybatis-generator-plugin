@@ -30,6 +30,7 @@ import javax.swing.tree.TreePath;
 import org.jetbrains.annotations.Nullable;
 
 import com.intellij.openapi.ui.DialogWrapper;
+import com.intellij.openapi.ui.Messages;
 import com.zuicoding.framework.mybatis.generator.db.DBUtils;
 import com.zuicoding.framework.mybatis.generator.db.DynamicDBDriver;
 import com.zuicoding.framework.mybatis.generator.model.DataSourceInfo;
@@ -38,6 +39,7 @@ import com.zuicoding.framework.mybatis.generator.model.NodeEnum;
 import com.zuicoding.framework.mybatis.generator.model.TreeNode;
 import com.zuicoding.framework.mybatis.generator.service.FileGenerator;
 import com.zuicoding.framework.mybatis.generator.ui.custom.CustomTreeCellRenderer;
+import com.zuicoding.framework.mybatis.generator.util.StringTools;
 
 /**
  * Created by <a href="mailto:stephen.lin@gmail.com">Stephen.lin</a> on 2018/2/9.
@@ -74,7 +76,6 @@ public class MybatisGeneratorDialog extends DialogWrapper {
     private JComboBox queryIdCombobox;
     private JComboBox useActColumnCombobox;
     private JPanel sqlMapGeneratorPanel;
-    private JButton generatorButton;
     private DynamicDBDriver dynamicDBDriver;
 
     private ConnectionDialog connectionDialog;
@@ -181,16 +182,6 @@ public class MybatisGeneratorDialog extends DialogWrapper {
 
         bindButtonEvent(javaClientProjectButton, javaClientProjectPathField);
 
-        generatorButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    generate();
-                } catch (Exception e1) {
-                    e1.printStackTrace();
-                }
-            }
-        });
     }
 
     private void fileBrowser(){
@@ -224,6 +215,38 @@ public class MybatisGeneratorDialog extends DialogWrapper {
 
     }
 
+    @Override
+    protected void doOKAction() {
+        try {
+            if (StringTools.isBank(javaModelPackagePathField.getText())) {
+                Messages.showErrorDialog("请填写java model 包名","Mybatis Generator");
+                return;
+            }
+            if (StringTools.isBank(javaModelProjectPathField.getText())) {
+                Messages.showErrorDialog("请填写java model 项目路径","Mybatis Generator");
+                return;
+            }
+            if (StringTools.isBank(sqlMapPackagePathField.getText())) {
+                Messages.showErrorDialog("请填写 sql mapper.xml 包名","Mybatis Generator");
+                return;
+            }
+            if (StringTools.isBank(sqlMapProjectPathField.getText())) {
+                Messages.showErrorDialog("请填写 sql mapper.xml 项目路径","Mybatis Generator");
+                return;
+            }
+            if (StringTools.isBank(javaClientPackagePathField.getText())) {
+                Messages.showErrorDialog("请填写 java dao/mapper 包名","Mybatis Generator");
+                return;
+            }
+            if (StringTools.isBank(javaClientProjectPathField.getText())) {
+                Messages.showErrorDialog("请填写 java dao/mapper 项目路径","Mybatis Generator");
+                return;
+            }
+            generate();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     private void bindOpenDB(){
         createConButton.addActionListener(new ActionListener() {
