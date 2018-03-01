@@ -60,7 +60,7 @@ public class ConnectionDialog extends DialogWrapper {
         bindEvent();
         settingsComponent = MybatisGeneratorSettingsComponent.getInstance();
         driverTypeCombobox.setModel(new MybatisGeneratorComboBoxModel(
-                settingsComponent.getState()));
+                settingsComponent.getOldSettings()));
         driverTypeCombobox.setEditable(false);
         driverTypeCombobox.setRenderer(new MybaitsGeneratorComboBoxRenderer());
         driverTypeCombobox.addItemListener(new ItemListener() {
