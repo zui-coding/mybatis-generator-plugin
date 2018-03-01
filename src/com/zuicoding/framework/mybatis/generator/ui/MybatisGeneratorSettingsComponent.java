@@ -35,7 +35,7 @@ import com.zuicoding.framework.mybatis.generator.util.StringTools;
  */
 @State(name = "mybatisGeneratorSettings", storages = @Storage(id = "other", file =
         "$APP_CONFIG$/mybatis-generator-settings.xml"))
-public class MybatisGeneratorSettingsComponent implements PersistentStateComponent<List<MybatisGeneratorSetting>> {
+public class MybatisGeneratorSettingsComponent implements PersistentStateComponent<MybatisGeneratorSettingsComponent.SettingWrapper> {
     private JPanel container;
     private JTable driverTable;
     private JButton addButton;
@@ -47,6 +47,19 @@ public class MybatisGeneratorSettingsComponent implements PersistentStateCompone
     private JFileChooser fileChooser;
 
     private List<MybatisGeneratorSetting> oldSettings;
+
+    public static class SettingWrapper {
+
+        private List<MybatisGeneratorSetting> settings;
+
+        public List<MybatisGeneratorSetting> getSettings() {
+            return settings;
+        }
+
+        public void setSettings(List<MybatisGeneratorSetting> settings) {
+            this.settings = settings;
+        }
+    }
 
     public MybatisGeneratorSettingsComponent() {
 
@@ -98,11 +111,12 @@ public class MybatisGeneratorSettingsComponent implements PersistentStateCompone
 
     @Nullable
     @Override
-    public List<MybatisGeneratorSetting> getState() {
+    public SettingWrapper getState() {
         int count = driverTable.getRowCount();
         if(count <= 0) {
             return null;
         }
+        SettingWrapper wrapper = new SettingWrapper();
         List<MybatisGeneratorSetting> settings = new ArrayList<>(count);
         MybatisGeneratorSetting setting = null;
         for (int i = 0; i < count; i++) {
@@ -121,23 +135,23 @@ public class MybatisGeneratorSettingsComponent implements PersistentStateCompone
             setting = new MybatisGeneratorSetting(name, driverClass, driverPath,urlTemplate);
             settings.add(setting);
         }
-
-        return settings;
+        wrapper.setSettings(settings);
+        return wrapper;
     }
 
     @Override
-    public void loadState(List<MybatisGeneratorSetting> mybatisGeneratorSettings) {
-        if (mybatisGeneratorSettings == null || mybatisGeneratorSettings.size() == 0) {
+    public void loadState(SettingWrapper wrapper) {
+        if (wrapper == null || wrapper.settings == null) {
             return;
         }
         tableModel = new DefaultTableModel(null, header);
         driverTable.setModel(tableModel);
 
-        int size = mybatisGeneratorSettings.size();
+        int size = wrapper.settings.size();
         Object[] data = null;
         for (int i = 0; i < size; i++) {
 
-            MybatisGeneratorSetting setting = mybatisGeneratorSettings.get(i);
+            MybatisGeneratorSetting setting = wrapper.settings.get(i);
             data = new Object[] {setting.getName(),
                     setting.getDriverClass(),
                     setting.getDriverPath(),
@@ -147,7 +161,7 @@ public class MybatisGeneratorSettingsComponent implements PersistentStateCompone
             tableModel.addRow(data);
         }
         driverTable.setModel(tableModel);
-        this.oldSettings = mybatisGeneratorSettings;
+        this.oldSettings = wrapper.settings;
     }
 
     public JPanel getContainer() {

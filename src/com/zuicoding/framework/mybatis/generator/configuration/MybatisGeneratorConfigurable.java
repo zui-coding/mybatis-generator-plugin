@@ -46,12 +46,16 @@ public class MybatisGeneratorConfigurable implements SearchableConfigurable {
     @Override
     public boolean isModified() {
         List<MybatisGeneratorSetting> oldSettings = component.getOldSettings();
-        List<MybatisGeneratorSetting> newSettings = component.getState();
-        if (oldSettings == null || newSettings == null) {
-            return true;
+        MybatisGeneratorSettingsComponent.SettingWrapper wrapper = component.getState();
+        if(oldSettings == null && wrapper == null) {
+            return false;
         }
 
-        boolean result = oldSettings.size() == newSettings.size();
+        if (oldSettings == null  || wrapper == null || wrapper.getSettings() == null) {
+            return true;
+        }
+        List<MybatisGeneratorSetting> newSettings = wrapper.getSettings();
+        boolean result = oldSettings.size() == wrapper.getSettings().size();
         if (result) {
             for (int i = 0,size = oldSettings.size(); i < size; i++) {
                 MybatisGeneratorSetting oldSetting = oldSettings.get(i);
@@ -61,17 +65,18 @@ public class MybatisGeneratorConfigurable implements SearchableConfigurable {
                 }
             }
         }
-
-
         return !result;
     }
 
     @Override
     public void apply() throws ConfigurationException {
+        MybatisGeneratorSettingsComponent.SettingWrapper wrapper = component.getState();
+        if (wrapper == null) {
+            component.setOldSettings(null);
+            return;
+        }
+        component.setOldSettings(wrapper.getSettings());
 
-        List<MybatisGeneratorSetting> newSettings = component.getState();
-
-        component.setOldSettings(newSettings);
 
     }
 }
