@@ -4,18 +4,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
-import javax.swing.JFileChooser;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.filechooser.FileSystemView;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellEditor;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -24,7 +21,7 @@ import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
 import com.zuicoding.framework.mybatis.generator.model.MybatisGeneratorSetting;
-import com.zuicoding.framework.mybatis.generator.ui.custom.BorderTableCellRenderer;
+import com.zuicoding.framework.mybatis.generator.ui.custom.FileChooserCellEditor;
 import com.zuicoding.framework.mybatis.generator.util.StringTools;
 
 /**
@@ -40,14 +37,14 @@ public class MybatisGeneratorSettingsComponent implements PersistentStateCompone
     private JTable driverTable;
     private JButton addButton;
     private JButton delButton;
+    private JScrollPane scrollPane;
 
     private String[] header = new String[] {"name", "driverClass", "driverPath","url"};
     private DefaultTableModel tableModel;
-    private JTextField driverPathField;
-    private JFileChooser fileChooser;
+
 
     private List<MybatisGeneratorSetting> oldSettings;
-
+    private TableCellEditor cellEditor;
     public static class SettingWrapper {
 
         private List<MybatisGeneratorSetting> settings;
@@ -60,40 +57,20 @@ public class MybatisGeneratorSettingsComponent implements PersistentStateCompone
             this.settings = settings;
         }
     }
-
     public MybatisGeneratorSettingsComponent() {
 
         tableModel = new DefaultTableModel(null, header);
 
         driverTable.setModel(tableModel);
 
-        driverTable.setDefaultRenderer(Object.class, new BorderTableCellRenderer());
-        driverPathField = new JTextField();
-        driverPathField.setEditable(false);
+        driverTable.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
 
-        driverPathField.addMouseListener(
-                new MouseAdapter() {
-                    @Override
-                    public void mouseClicked(MouseEvent e) {
-
-                        if (fileChooser == null) {
-                            fileChooser = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
-                        }
-                        int returnValue = fileChooser.showOpenDialog(container);
-                        if (returnValue == JFileChooser.APPROVE_OPTION) {
-                            File selectedFile = fileChooser.getSelectedFile();
-                            driverPathField.setText(selectedFile.getAbsolutePath());
-                        } else {
-                            driverPathField.setText("");
-                        }
-
-                    }
-                });
         addButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 tableModel.addRow(new Object[4]);
-                driverTable.getColumnModel().getColumn(2).setCellEditor(new DefaultCellEditor(driverPathField));
+                driverTable.getColumnModel().getColumn(2).setCellEditor(cellEditor);
+
             }
         });
 
@@ -107,6 +84,33 @@ public class MybatisGeneratorSettingsComponent implements PersistentStateCompone
 
             }
         });
+
+
+        //driverTable.setCellEditor(new FileChooserCellEditor(driverTable,false));
+        scrollPane.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                TableCellEditor editor = driverTable.getCellEditor();
+                if (editor == null) {
+                    return;
+                }
+
+                if (!driverTable.isEditing()) {
+                    return;
+                }
+                if (editor.getCellEditorValue() != null) {
+
+                    editor.stopCellEditing();
+                    tableModel.fireTableDataChanged();
+                    return;
+                }
+                editor.cancelCellEditing();
+                tableModel.fireTableDataChanged();
+            }
+        });
+        cellEditor = new FileChooserCellEditor();
+
+
     }
 
     @Nullable
