@@ -49,6 +49,7 @@ public class ConnectionDialog extends DialogWrapper {
     private DataSourceInfo dataSourceInfo;
     private JFileChooser fileChooser;
     private MybatisGeneratorSettingsComponent settingsComponent;
+    private FileGenerator generator;
     public ConnectionDialog(){
         super(false);
         init();
@@ -62,6 +63,7 @@ public class ConnectionDialog extends DialogWrapper {
         driverTypeCombobox.setModel(new MybatisGeneratorComboBoxModel(
                 settingsComponent.getOldSettings()));
         driverTypeCombobox.setEditable(false);
+        driverTypeCombobox.updateUI();
         driverTypeCombobox.setRenderer(new MybaitsGeneratorComboBoxRenderer());
         driverTypeCombobox.addItemListener(new ItemListener() {
             @Override
@@ -74,6 +76,7 @@ public class ConnectionDialog extends DialogWrapper {
                 }
             }
         });
+        generator = FileGenerator.getInstance();
     }
 
     private void bindEvent(){
@@ -137,10 +140,10 @@ public class ConnectionDialog extends DialogWrapper {
             dataSourceInfo.setHost(hostField.getText());
             dataSourceInfo.setPassword(new String(passwordField.getPassword()));
             MybatisGeneratorSetting setting = (MybatisGeneratorSetting) driverTypeCombobox.getSelectedItem();
-            FileGenerator generator = FileGenerator.getInstance();
             dataSourceInfo.setUrl(generator.generateDBUrl("",
                     dataSourceInfo.getHost(),
                     dataSourceInfo.getPort(),setting.getUrlTemplate()));
+            dataSourceInfo.setUrl(setting.getUrlTemplate());
             dataSourceInfo.setUrlTemplate(setting.getUrlTemplate());
             super.doOKAction();
         }catch (Exception e){

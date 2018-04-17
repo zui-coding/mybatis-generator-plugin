@@ -34,13 +34,15 @@ import com.zuicoding.framework.mybatis.generator.util.StringTools;
  */
 public class FileGenerator {
 
+    private static FileGenerator instance = null;
+
     private VelocityEngine engine;
     private ShellCallback callback;
     private List<String> warnings = new ArrayList<>();
     private boolean overwrite = true;
     private Template template ;
     private ProgressCallback progressCallback;
-    private FileGenerator() throws Exception {
+    private FileGenerator() {
         engine = new VelocityEngine();
         engine.addProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
         engine.addProperty("classpath.resource.loader.class",
@@ -53,20 +55,12 @@ public class FileGenerator {
         progressCallback = new VerboseProgressCallback();
     }
 
-    private static class FileGeneratorHolder {
-        private static final FileGenerator generator;
 
-        static {
-            try {
-                generator = new FileGenerator();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+    public static FileGenerator getInstance(){
+        if (instance == null) {
+            instance = new FileGenerator();
         }
-    }
-
-    public static final FileGenerator getInstance() {
-        return FileGeneratorHolder.generator;
+        return instance;
     }
 
     public void generateConfig(Map<String, Object> params, Writer writer) {

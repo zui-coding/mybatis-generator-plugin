@@ -24,6 +24,6 @@ public class MybaitsGeneratorComboBoxRenderer extends BasicComboBoxRenderer {
             MybatisGeneratorSetting setting = (MybatisGeneratorSetting) value;
             setText(setting.getName());
         }
-        return super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+        return this;
     }
 }
